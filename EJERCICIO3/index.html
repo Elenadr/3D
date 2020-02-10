@@ -39,7 +39,7 @@
           /* Los tres primeros primeros numeros, RGB, el último es alpha, referido a la transparencia*/
           gl.clearColor(0.0,0.0,0.0,0.7); /*Aquí le estoy diciendo el color del fondo*/
           gl.clear(gl.COLOR_BUFFER_BIT); /*Aquí le estoy dando color al fondo*/
-        }
+
 
         var vs = document.getElementById('shaderVs').innerHTML; /*Llamamos a los shaders*/
         var fs = document.getElementById('shaderFs').innerHTML; /*Leer los shaders*/
@@ -60,7 +60,7 @@
     		// Draw
     		gl.drawArrays(gl.POINTS, 0, 1);
 
-        }
+      }
   function initShaders(gl, vs_source, fs_source) {
     // Compile shaders
     var vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
