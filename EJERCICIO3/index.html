@@ -37,7 +37,7 @@
       }
 
           /* Los tres primeros primeros numeros, RGB, el último es alpha, referido a la transparencia*/
-          gl.clearColor(0.0,0.0,0.0,0.7); /*Aquí le estoy diciendo el color del fondo*/
+          gl.clearColor(0.0,0.0,0.0,1.0); /*Aquí le estoy diciendo el color del fondo*/
           gl.clear(gl.COLOR_BUFFER_BIT); /*Aquí le estoy dando color al fondo*/
 
 
@@ -48,6 +48,9 @@
             console.log('Failed to intialize shaders.');
             return;
         }
+
+
+        //dibuja el punto
         var a_Position = gl.getAttribLocation(gl.program, "a_Position");
 
     		// 1. Array values
@@ -55,10 +58,12 @@
     		gl.vertexAttrib1fv(a_Position, verticesArray);
 
     		// 2. Single values
-    		//gl.vertexAttrib1f(a_Position, 0.5);
+    		gl.vertexAttrib1f(a_Position, 0.5); //coordenadas del punto
 
     		// Draw
-    		gl.drawArrays(gl.POINTS, 0, 1);
+    		gl.drawArrays(gl.POINTS, 0,1); //numero de puntos que me pinta
+        //dibuja el punto
+
 
       }
   function initShaders(gl, vs_source, fs_source) {
@@ -91,6 +96,33 @@
         }
         return shader;
     }
+
+    // Get canvas object from the DOM
+    var canvas = document.getElementById("myCanvas");
+    // Init WebGL context
+    var gl = canvas.getContext("webgl");
+    // Register event handler
+    canvas.onmousedown = function(ev) {
+    click(ev, gl, canvas);
+    };
+    function click(ev, gl, canvas) {
+    // Coordinates of canvas origin
+    var rect = ev.target.getBoundingClientRect();
+    // relative x coordinate of click in canvas
+    var clickX = ev.clientX - rect.left;
+    // relative y coordinate of click in canvas
+    var clickY = ev.clientY - rect.top;
+    // WebGL coordinates (3D)
+    var halfCanvasWidth = canvas.width / 2;
+    var halfCanvasHeight = canvas.height / 2;
+    var x = (clickX - halfCanvasWidth) / halfCanvasWidth;
+    var y = (halfCanvasHeight - clickY) / halfCanvasHeight;
+    var xyz = [x, y, 0];
+    //guardar este array en una veriable de nombre que yo quiera y despues hacer un for (var i = 0; i < //array.len que me vaYA DIBUANDO PUNTOS dentro de la funcion click gth; i++) {
+      //array[i] que me vaYA DIBUANDO PUNTOS dentro de la funcion click     }
+    }
+    //
 </script>
+
 
 </html>
