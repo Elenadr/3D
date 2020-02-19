@@ -6,23 +6,26 @@
     <title>Crear un Canvas 3d</title>
   </head>
   <body onload= "init()">
-    <canvas id="myCanvas" width="640" height="480"></canvas>
+    <canvas id="myCanvas" width="640" height="600"></canvas>
   </body>
 
 
   <script id="shaderVs" type="x-shader/x-vertex">
       /*Definimos vertex shader para posición y tamaño*/
       attribute vec4 a_Position;
+      attribute float a_Size;
         void main() {
             gl_Position = a_Position; //pos
-            gl_PointSize = 10.0; /*Tamaño*/
+            gl_PointSize = a_Size; /*Tamaño*/
     }
   </script>
 
   <script id= "shaderFs" type="x-shader/x-fragment">
     /*Definimos fragment shader para el color*/
+    precision mediump float;
+    uniform vec4 u_Color;
     void main(){
-      gl_FragColor=vec4(1.0,0.0,0.0,1.0); /*Color*/
+      gl_FragColor= u_Color; /*Color*/
     }
   </script>
   <script>
@@ -50,17 +53,12 @@
         }
 
 
-        //Conseguiir la posicion de la variabla a_Position
-        var a_Position = gl.getAttribLocation(gl.program, "a_Position");
 
     		// 1. Array values
         // Get canvas object from the DOM
         canvas.onmousedown = function(ev) {
         click(ev, gl, canvas);
         };
-
-
-
       }
   function initShaders(gl, vs_source, fs_source) {
     // Compile shaders
@@ -92,7 +90,9 @@
         }
         return shader;
     }
-    var raton = [];
+    var g_points = [];
+    var g_colors = [];
+    var g_size = [];
     function click(ev, gl, canvas) {
       // Coordinates of canvas origin
       var rect = ev.target.getBoundingClientRect();
@@ -107,13 +107,49 @@
       var y = (halfCanvasHeight - clickY) / halfCanvasHeight;
       var xyz = [x, y, 0];
 
-      raton.push=(x,y);
+      g_points.push(xyz);
       gl.clear(gl.COLOR_BUFFER_BIT);
-      var len = raton.length;
-    for(var i = 0; i < raton.len; i+=2) {
-    gl.vertexAttribf(a_Position, raton[i], raton[i+1], 0.0);
+      var len = g_points.length;
 
-    gl.drawArrays(gl.POINTS, 0, 1);
+if(x>0.7 || y>0.7){
+  g_colors.push([1.0,1.0,1.0,1.0]);
+  g_size.push(20.0);
+}else if(x<-0.7 || y<-0.7){
+  g_colors.push([1.0,1.0,1.0,1.0]);
+  g_size.push(20.0);
+}else{
+      if(x>= 0.0 && y>= 0.0){
+        g_colors.push([1.0,0.0,0.0,1.0]); //red
+        g_size.push(10.0);
+      } else if (x<= 0.0 && y<= 0.0){
+        g_colors.push([0.0,0.0,1.0,1.0]); //green
+        g_size.push(10.0);
+      } else if (x<= 0.0 && y>= 0.0){
+        g_colors.push([1.0,0.0,0.5,1.0]); //pink
+        g_size.push(10.0);
+
+      }else if ((x>= 0.0 && y<=0.0)) {
+        g_colors.push([0.0,1.0,0.0,1.0]); //blue
+        g_size.push(10.0);
+      }else{
+        g_colors.push([0.0,1.0,1.0,1.0]);
+        g_size.push(20.0);
+
+      }
+  }
+      //dibuja el punto
+      var a_Position = gl.getAttribLocation(gl.program, "a_Position");
+      var u_Color = gl.getUniformLocation(gl.program, "u_Color");
+      var a_Size = gl.getAttribLocation(gl.program, "a_Size");
+
+
+    for(var i = 0; i < len; i++) {
+        console.log(g_points[i]);
+    
+        gl.vertexAttrib3fv(a_Position, g_points[i]);
+        gl.uniform4fv(u_Color, g_colors[i]);
+        gl.vertexAttrib1f(a_Size, g_size[i]);
+        gl.drawArrays(gl.POINTS, 0, 1);
     }
     //guardar este array en una veriable de nombre que yo quiera .push y despues hacer un for (var i = 0; i < //array.len que me vaYA DIBUANDO PUNTOS dentro de la funcion click gth; i++) {
       //array[i] que me vaYA DIBUANDO PUNTOS dentro de la funcion click     }
