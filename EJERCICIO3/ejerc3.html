@@ -1,4 +1,4 @@
-<!-- Ejercicio para dibujar rectangulo con WebGL -->
+<!-- Ejercicio para dibujar puntos con WebGL -->
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
@@ -15,7 +15,7 @@
       attribute vec4 a_Position;
       attribute float a_Size;
         void main() {
-            gl_Position = a_Position; //pos
+            gl_Position = a_Position; //posicion
             gl_PointSize = a_Size; /*Tamaño*/
     }
   </script>
@@ -51,8 +51,6 @@
             console.log('Failed to intialize shaders.');
             return;
         }
-
-
 
     		// 1. Array values
         // Get canvas object from the DOM
@@ -90,6 +88,7 @@
         }
         return shader;
     }
+    //Las variables a cambiar, color,tamaño y los puntos a dibujar
     var g_points = [];
     var g_colors = [];
     var g_size = [];
@@ -106,35 +105,33 @@
       var x = (clickX - halfCanvasWidth) / halfCanvasWidth;
       var y = (halfCanvasHeight - clickY) / halfCanvasHeight;
       var xyz = [x, y, 0];
-
       g_points.push(xyz);
       gl.clear(gl.COLOR_BUFFER_BIT);
       var len = g_points.length;
 
-if(x>0.7 || y>0.7){
-  g_colors.push([1.0,1.0,1.0,1.0]);
-  g_size.push(20.0);
-}else if(x<-0.7 || y<-0.7){
-  g_colors.push([1.0,1.0,1.0,1.0]);
-  g_size.push(20.0);
-}else{
-      if(x>= 0.0 && y>= 0.0){
-        g_colors.push([1.0,0.0,0.0,1.0]); //red
-        g_size.push(10.0);
-      } else if (x<= 0.0 && y<= 0.0){
-        g_colors.push([0.0,0.0,1.0,1.0]); //green
-        g_size.push(10.0);
-      } else if (x<= 0.0 && y>= 0.0){
-        g_colors.push([1.0,0.0,0.5,1.0]); //pink
-        g_size.push(10.0);
-
-      }else if ((x>= 0.0 && y<=0.0)) {
-        g_colors.push([0.0,1.0,0.0,1.0]); //blue
-        g_size.push(10.0);
-      }else{
-        g_colors.push([0.0,1.0,1.0,1.0]);
+/*Anido dos ifs para que se cumplan las dos condiciones, evaluo si esta a mas 0,7 del centro
+si es asi, el segundo if me dibuja los puntos de colores de los 4 cuadrantes*/
+      if(x>0.7 || y>0.7){
+        g_colors.push([1.0,1.0,1.0,1.0]);
         g_size.push(20.0);
-
+      }else if(x<-0.7 || y<-0.7){
+        g_colors.push([1.0,1.0,1.0,1.0]);
+        g_size.push(20.0);
+      }else{
+        if(x>= 0.0 && y>= 0.0){
+          g_colors.push([1.0,0.0,0.0,1.0]); //red
+          g_size.push(10.0);
+        }else if (x<= 0.0 && y<= 0.0){
+          g_colors.push([0.0,0.0,1.0,1.0]); //green
+          g_size.push(10.0);
+        }else if (x<= 0.0 && y>= 0.0){
+          g_colors.push([1.0,0.0,0.5,1.0]); //pink
+          g_size.push(10.0);
+        }else if ((x>= 0.0 && y<=0.0)) {
+          g_colors.push([0.0,1.0,0.0,1.0]); //blue
+          g_size.push(10.0);
+        }else{
+          console.log("No es una zona correcta");
       }
   }
       //dibuja el punto
@@ -142,22 +139,18 @@ if(x>0.7 || y>0.7){
       var u_Color = gl.getUniformLocation(gl.program, "u_Color");
       var a_Size = gl.getAttribLocation(gl.program, "a_Size");
 
-
+//bucle for para que vaya pintando puntos
     for(var i = 0; i < len; i++) {
         console.log(g_points[i]);
-    
+
         gl.vertexAttrib3fv(a_Position, g_points[i]);
         gl.uniform4fv(u_Color, g_colors[i]);
         gl.vertexAttrib1f(a_Size, g_size[i]);
         gl.drawArrays(gl.POINTS, 0, 1);
     }
     //guardar este array en una veriable de nombre que yo quiera .push y despues hacer un for (var i = 0; i < //array.len que me vaYA DIBUANDO PUNTOS dentro de la funcion click gth; i++) {
-      //array[i] que me vaYA DIBUANDO PUNTOS dentro de la funcion click     }
+      //array[i] que me vaYA DIBUANDO PUNTOS dentro de la funcion click
     }
     //
-
-
 </script>
-
-
 </html>
