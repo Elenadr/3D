@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="es" dir="ltr">
   <head>
-    <title>Ejercicio 4</title>
+    <title>Transformaciones con WebGL</title>
+    <!--Práctica 3d de transformaciones, Elena del Río-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
     <script id="shaderVs" type="x-shader/x-vertex">
+    //Definimos los shaders, y la matriz para el triangulo
         attribute vec4 a_Position;
         uniform mat4 u_Matrix;
         void main() {
@@ -12,16 +14,18 @@
     </script>
 
     <script id="shaderFs" type="x-shader/x-fragment">
+    //Como solo necesito un color y el triangulo esta fijo defino aqui yellow
         void main() {
             gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0);
         }
     </script>
     <script>
+    //Definimos las variables necesarias y las inicializamos
             var gl;
-            var rotate = 0.0;
-            var x= 0.0;
-            var y = 0.0;
-            var scale =1.0;
+            var z = 0.0; //Variable de rotacion
+            var x= 0.0; //Variable de traslacion en x
+            var y = 0.0; //Variable de traslacion en y
+            var scale =1.0; //Variable de escalado
 
             function init() {
                 // Get canvas object from the DOM
@@ -48,43 +52,49 @@
                 // Draw Scene
                 drawScene();
             }
+            
+            //funcion facilitada por el profesor para los casos.
             document.onkeydown = function (ev) {
               var step = new Number(document.getElementById("step").value);
+              //NOTA: La prueba de teclas la he realidado en un Macbook
+              //Al no tener tecla Repag, Avpag, Home y End es posible que
+              //al probarlo en un pc algunas cosas esten alrevés.
               switch (ev.keyCode) {
                 case 37: // Left
                   x -=step;
-                  // ...
+                  // Movimiento en el sentido negativo del eje x (izquierda)
                   break;
                 case 39: // Right
                 x +=step;
-                  // ...
+                  // Movimiento en el sentido positivo del eje x (derecha)
                   break;
                 case 38: // Up
-                y -=step;
-                  // ...
+                y +=step;
+                  // Movimiento en el sentido positivo del eje y (arriba)
                   break;
                 case 40: // Down
-                y +=step;
-                  // ...
+                y -=step;
+                  // Movimiento en el sentido negativo del eje y (abajo)
                   break;
                 case 33: // PageUp
                 scale +=step;
-                  // ...
+                  // Escalado positivo, se hace mas grande
                   break;
                 case 34: // PageDown
                 scale -=step;
-                  // ...
+                  //Escalado negativo, se hace mas pequeño
                   break;
                 case 36: // Home
-                rotate +=step;
-                  // ...
+                z +=step;
+                  //Giro negativo en eje z
                   break
                 case 35: // End
-                rotate -=step;
-                  // ...
+                z -=step;
+                  //Giro positivo en eje z
                   break;
                 }
-                // ...
+                // Necesario el drawscene, ya que eliminarlo de aqui implica
+                // que no funcionan las teclas de Movimiento,escalado o rotacion
                 drawScene();
       };
 
@@ -92,23 +102,21 @@
                 // Clear canvas
                 gl.clear(gl.COLOR_BUFFER_BIT);
 
-                // Matriz rotacion
-                var rotated = mat4.fromZRotation(mat4.create(), rotate);
-                // Matriz translacion
+                // Definimos la Matriz de rotacion
+                var rotated = mat4.fromZRotation(mat4.create(), z);
+                // Definimos la Matriz de translacion
                 var translated = mat4.fromTranslation(mat4.create(), [x,y,0.0]);
-                // Matriz escalado
+                // Definimos la Matriz de escalado
                 var scaled = mat4.fromScaling(mat4.create(), [scale, scale, 0.0]);
-                //multiplicacion de matrices
+                //Multiplicamos las matrices en dos variables
                 var matrix = mat4.multiply(mat4.create(), translated, scaled);
                 var matrix2 = mat4.multiply(mat4.create(), matrix, rotated);
-
                 var mvMatrixUniform = gl.getUniformLocation(gl.program, "u_Matrix");
                 gl.uniformMatrix4fv(mvMatrixUniform, false, matrix2);
-
                 // Draw
                 gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-
+                //Para un cuadrado necesito dos triangulos, ergo 6 vertices.
+                //gl.drawArrays me dibuja el cuadrado.
             }
 
             function initVertexBuffers(gl) {
@@ -139,7 +147,7 @@
               return vertices.length / dim;
             }
 
-
+            //inicializamos los shaders
             function initShaders(gl, vs_source, fs_source) {
                 // Compile shaders
                 var vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
