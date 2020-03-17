@@ -90,7 +90,6 @@
             }
             initProjection(gl, canvas);
             requestAnimationFrame(drawScene);
-
         }
 
         function initVertexShader(gl) {
@@ -166,10 +165,8 @@
         }
 
         function initProjection(gl, canvas) {
-            // Write u_pMatrix
+            //Variables facilitadas por el profesor
             var projectionValue = document.querySelector('input[name="projection"]:checked').value;
-
-
             var ratio = canvas.width / canvas.height;
 
             if (projectionValue == 'perspective'){
@@ -217,7 +214,7 @@
     </script>
 
 </head>
-
+<!--Lineas de codigo facuitadas por el profesor en la práctica-->
 <body onload="init()">
   <canvas id="myCanvas" width="640" height="480"></canvas><br>
   <b>Rotation</b>
