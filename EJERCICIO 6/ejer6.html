@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<!--COMENTO LO QUE PASABA EN MAYUSCULAS POSDATA NO ESTOY GRITANDO -->
+<!--Práctica 6, texturas -->
 <!--Mi codigo-->
 <head>
     <title>Mi Práctica 6</title>
@@ -36,6 +36,8 @@
     </script>
 
     <script>
+
+        //Inicializando las variables necesarias
         var gl;
         var count = 0.0;
         var z = -3;
@@ -43,13 +45,19 @@
         var y = 0.0; //Variable de rotacion y
         var canvas;
         var cam = 0.0;
+        var arrow_up = [0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0];
+        var arrow_left = [1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0];
+        var arrow_down =   [1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0];
+        var arrow_right =[0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0];
+
+        var final_vector = arrow_left;
 
 
         function init() {
 
-          // Get canvas object from the DOM
+            // Get canvas object from the DOM
+            canvas = document.getElementById("myCanvas");
 
-           canvas = document.getElementById("myCanvas");
             // Init WebGL context
             gl = canvas.getContext("webgl");
             if (!gl) {
@@ -77,92 +85,103 @@
             // Init textures
             initTexturesAndDraw(gl);
 
-//AQUI CERRABAS EL PARENTESIS DEL INIT Y TIENES QUE CERRARLO AL FINAL
+            // Event listener for mouse wheel
+            //Facilitado por el profesor, captura
+            //la rueda del ratón y mueve la cámara
+            document.addEventListener('wheel', function (event) {
+              z = event.wheelDelta > 0 ? z + 1 : z - 1;
+            });
+
         //funcion facilitada por el profesor para los casos.
-//LO DE LA X = 0.0 EN LUEGAR DE 0 NO ES RELEVANTE PERO SE ME HA IDO Y PROBANDO
-//LO HE CAMBIADO
         document.onkeydown = function (ev) {
           var step = new Number(document.getElementById("step").value);
+
           //NOTA: La prueba de teclas la he realidado en un Macbook
-          //Al no tener tecla Repag, Avpag, Home y End es posible que
+          //Al no tener tecla Repag, Avpag, es posible que
           //al probarlo en un pc algunas cosas esten alrevés.
           switch (ev.keyCode) {
             case 37: // Left
-            y +=step;
-            x = 0.0;
-            console.log('left');
-              // Movimiento en el sentido negativo del eje x (izquierda)
+              //Rotacion hacia la izquierda del cubo
+              y +=step;
+              x = 0.0;
+              final_vector = arrow_left;
+              console.log('left');
               break;
             case 39: // Right
-            y -= step;
-            x = 0.0;
-            console.log('right');
-              // Movimiento en el sentido positivo del eje x (derecha)
+              // Rotacion hacia la derecha del cubo
+              y -= step;
+              x = 0.0;
+              final_vector = arrow_right;
+              console.log('right');
               break;
             case 38: // Up
-            x -= step;
-            y = 0.0;
-            console.log('up');
-              // Movimiento en el sentido positivo del eje y (arriba)
+              // Rotacion hacia arriba del cubo
+              x -= step;
+              y = 0.0;
+              final_vector = arrow_up;
+              console.log('up');
               break;
             case 40: // Down
-            x += step;
-            y = 0.0;
-            console.log('do');
-              // Movimiento en el sentido negativo del eje y (abajo)
+              // Rotacion hacia abajo del cubo
+              x += step;
+              y = 0.0;
+              final_vector = arrow_down;
+              console.log('down');
               break;
             case 33: // PageUp
-            cam += step;
-              console.log('D');
-              // Escalado positivo, se hace mas grande
+              //Elevacion de la cámara
+              cam += step;
+              console.log('CameraUp');
               break;
             case 34: // PageDown
-            cam -= step;
-              console.log('H');
-
-              //Escalado negativo, se hace mas pequeño
+              //Descenso de la cámara
+              cam -= step;
+              console.log('CameraDown');
               break;
-//TENIAS UN JALEO CON LOS PARENTESIS Y EL INITVERTEXSHADER LO LLAMABAS AQUI
-//DENTRO Y ESO NO ES ASI
             }
-            // Necesario el drawscene, ya que eliminarlo de aqui implica
-            // que no funcionan las teclas de Movimiento,escalado o rotacion
             initVertexShader(gl);
             }
-}
+          }
 
         function initVertexShader(gl) {
+
             // Vertexes and texture coordinates
             var vertexesAndTextures = [
-               -0.5, -0.5, -0.5, 0.0, 0.0,
-                0.5, -0.5, -0.5, 1.0, 0.0,
-                0.5, 0.5, -0.5, 1.0, 1.0,
-                -0.5, 0.5, -0.5, 0.0, 1.0,
+                //FRONT
+               -0.5, -0.5, -0.5, final_vector[0], final_vector[1],  //v0
+                0.5, -0.5, -0.5, final_vector[2], final_vector[3],  //v1
+                0.5, 0.5, -0.5, final_vector[4], final_vector[5],   //v2
+                -0.5, 0.5, -0.5, final_vector[6], final_vector[7],  //v3
 
-                -0.5, -0.5, 0.5, 0.0, 1.0,
-                0.5, -0.5, 0.5, 0.0, 0.0,
-                0.5, 0.5, 0.5, 1.0, 0.0,
-                -0.5, 0.5, 0.5, 1.0, 1.0,
+                //BACK
+                -0.5, -0.5, 0.5, final_vector[4], final_vector[5],
+                0.5, -0.5, 0.5, final_vector[6], final_vector[7],
+                0.5, 0.5, 0.5, final_vector[0], final_vector[1],
+                -0.5, 0.5, 0.5, final_vector[2], final_vector[3],
 
-                -0.5, -0.5, -0.5, 0.0, 0.0,
-                -0.5, 0.5, -0.5, 0.0, 1.0,
-                -0.5, 0.5, 0.5, 1.0, 1.0,
-                -0.5, -0.5, 0.5, 1.0, 0.0,
+                //LEFT
+                -0.5, -0.5, -0.5, final_vector[4], final_vector[5],
+                -0.5, 0.5, -0.5, final_vector[2], final_vector[3],
+                -0.5, 0.5, 0.5, final_vector[0], final_vector[1],
+                -0.5, -0.5, 0.5, final_vector[6], final_vector[7],
 
-                0.5, -0.5, -0.5, 0.0, 0.0,
-                0.5, 0.5, -0.5, 0.0, 1.0,
-                0.5, 0.5, 0.5, 1.0, 1.0,
-                0.5, -0.5, 0.5, 1.0, 0.0,
+                //RIGHT
+                0.5, -0.5, -0.5, final_vector[6], final_vector[7],
+                0.5, 0.5, -0.5, final_vector[0], final_vector[1],
+                0.5, 0.5, 0.5, final_vector[2], final_vector[3],
+                0.5, -0.5, 0.5, final_vector[4], final_vector[5],
 
-                -0.5, -0.5, -0.5, 0.0, 0.0,
-                -0.5, -0.5, 0.5, 0.0, 1.0,
-                0.5, -0.5, 0.5, 1.0, 1.0,
-                0.5, -0.5, -0.5, 1.0, 0.0,
+                //UP
+                -0.5, -0.5, -0.5, final_vector[6], final_vector[7],
+                -0.5, -0.5, 0.5, final_vector[0], final_vector[1],
+                0.5, -0.5, 0.5, final_vector[2], final_vector[3],
+                0.5, -0.5, -0.5, final_vector[4], final_vector[5],
 
-                -0.5, 0.5, -0.5, 0.0, 1.0,
-                -0.5, 0.5, 0.5, 0.0, 0.0,
-                0.5, 0.5, 0.5, 1.0, 0.0,
-                0.5, 0.5, -0.5, 1.0, 1.0,
+                //DOWN
+                -0.5, 0.5, -0.5, final_vector[2], final_vector[3],
+                -0.5, 0.5, 0.5, final_vector[4], final_vector[5],
+                0.5, 0.5, 0.5, final_vector[6], final_vector[7],
+                0.5, 0.5, -0.5, final_vector[0], final_vector[1],
             ];
 
             // Indexes
@@ -204,6 +223,7 @@
         }
 
         function initProjection(gl, canvas) {
+
             // Write u_pMatrix
             var pMatrixUniform = gl.getUniformLocation(gl.program, "u_pMatrix");
             var ratio = canvas.width / canvas.height;
@@ -212,11 +232,16 @@
 
             // Write u_vMatrix
             var vMatrixUniform = gl.getUniformLocation(gl.program, "u_vMatrix");
+
+            //Añadida la variable cam en lookAt para elevar y descender la misma
             var vMatrix = mat4.lookAt(mat4.create(), [0, cam, z], [0, 0, 0], [0, 1, 0]);
             gl.uniformMatrix4fv(vMatrixUniform, false, vMatrix);
         }
 
         function initTexturesAndDraw(gl) {
+
+        //Inicializarlas dos texturas, aqui hemos
+        // metido las dos imagenes necesarias
         var image0 = new Image();
         image0.src = 'arrow.jpg';
         var image1 = new Image();
@@ -246,20 +271,19 @@
         }
 
         function drawScene() {
+
             // Clear
             gl.clear(gl.COLOR_BUFFER_BIT);
             initProjection(gl, canvas);
 
-
-
-            // Rotate
+            // Definiendo las matrices de rotacion
             var rotatedx = mat4.fromXRotation(mat4.create(), x);
             var rotatedy = mat4.fromYRotation(mat4.create(), y);
-//EN var mvMatrix NO MULTIPLICABAS LAS MATRICES PORQUE NO PONIAS EL MULTIPLY
+
+            //Multiply para la multiplicacionde matrices
             var mvMatrix = mat4.multiply(mat4.create(), rotatedx,rotatedy);
             var uMvMatrix = gl.getUniformLocation(gl.program, "u_mvMatrix");
             gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
-
 
             // Draw
             gl.drawElements(gl.TRIANGLES, 6 * 2 * 3, gl.UNSIGNED_SHORT, 0);
@@ -270,6 +294,7 @@
         }
 
         function initShaders(gl, vs_source, fs_source) {
+
             // Compile shaders
             var vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
             var fragmentShader = makeShader(gl, fs_source, gl.FRAGMENT_SHADER);
@@ -304,7 +329,9 @@
 <body onload="init()">
     <canvas id="myCanvas" width="640" height="480"></canvas>
     <br>
-    Step: <input type="text" value="0.01" id="step">
+
+    <!-- Step inicializado a 0.1-->
+    Step: <input type="text" value="0.1" id="step">
 </body>
 
 </html>
